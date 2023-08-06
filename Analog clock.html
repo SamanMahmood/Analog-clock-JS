@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+      integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        margin-top: 100px;
+        background-color: rgb(222, 187, 146);
+      }
+      canvas {
+        border: 3px solid rgb(43, 44, 44);
+        border-radius: 50%;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Analog Clock</h1>
+    <canvas id="clockCanvas" width="200" height="200"></canvas>
+    <script>
+      function drawClock() {
+        const canvas = document.getElementById("clockCanvas");
+        const context = canvas.getContext("2d");
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2;
+        const radius = canvas.width / 2 - 6;
+
+        context.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Draw clock face
+        context.beginPath();
+        context.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+        context.lineWidth = 4;
+        context.strokeStyle = "black";
+        context.stroke();
+
+        // Draw clock numbers
+        context.font = "23px Arial";
+        context.textAlign = "center";
+        context.textBaseline = "middle";
+        for (let i = 1; i <= 12; i++) {
+          const angle = (i - 3) * ((2 * Math.PI) / 12);
+          const x = centerX + (radius - 20) * Math.cos(angle);
+          const y = centerY + (radius - 20) * Math.sin(angle);
+          context.fillText(i.toString(), x, y);
+        }
+
+        // Draw hour hand
+        const now = new Date();
+        const hours = now.getHours();
+        const minutes = now.getMinutes();
+        const seconds = now.getSeconds();
+        const hourAngle =
+          ((hours % 12) + minutes / 60) * ((2 * Math.PI) / 12) - Math.PI / 2;
+        drawHand(
+          context,
+          centerX,
+          centerY,
+          radius * 0.5,
+          hourAngle,
+          7,
+          "black"
+        );
+
+        // Draw minute hand
+        const minuteAngle =
+          (minutes + seconds / 60) * ((2 * Math.PI) / 60) - Math.PI / 2;
+        drawHand(
+          context,
+          centerX,
+          centerY,
+          radius * 0.7,
+          minuteAngle,
+          4,
+          "black"
+        );
+
+        // Draw second hand
+        const secondAngle = seconds * ((2 * Math.PI) / 60) - Math.PI / 2;
+        drawHand(
+          context,
+          centerX,
+          centerY,
+          radius * 0.7,
+          secondAngle,
+          2,
+          "red"
+        );
+
+        // Draw clock center
+        context.beginPath();
+        context.arc(centerX, centerY, 4, 0, 2 * Math.PI);
+        context.fillStyle = "black";
+        context.fill();
+      }
+
+      function drawHand(context, x, y, length, angle, width, color) {
+        const xEnd = x + length * Math.cos(angle);
+        const yEnd = y + length * Math.sin(angle);
+        context.beginPath();
+        context.moveTo(x, y);
+        context.lineTo(xEnd, yEnd);
+        context.lineWidth = width;
+        context.strokeStyle = color;
+        context.stroke();
+      }
+
+      setInterval(drawClock, 1000); // Update the clock every second
+    </script>
+  </body>
+</html>
